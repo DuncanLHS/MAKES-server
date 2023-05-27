@@ -3,7 +3,7 @@ import NextAuth, {
   getServerSession,
   type NextAuthOptions,
   type DefaultSession,
-  type Account,
+  type User,
 } from "next-auth";
 import type { APIGuildMember } from "discord-api-types/v10";
 import DiscordProvider from "next-auth/providers/discord";
@@ -14,11 +14,18 @@ import { prisma } from "prisma/db";
 const guildId = "1071217231515615282"; //TODO: Move guild id to db
 const memberRoleIds = ["1071217231536599133", "1071217231536599132"]; //TODO: Move member role ids to db
 
-const getMember = async (account: Account) => {
+const getMember = async (user: User) => {
   //https://discord.com/developers/docs/resources/guild#get-guild-member
+  const account = await prisma.account.findFirst({
+    where: {
+      userId: user.id,
+    },
+  });
   try {
     return await fetch(
-      `https://discord.com/api/guilds/${guildId}/members/${account.providerAccountId}`,
+      `https://discord.com/api/guilds/${guildId}/members/${
+        account!.providerAccountId
+      }`,
       {
         headers: {
           Authorization: `Bot ${process.env.DISCORD_BOT_TOKEN as string}`,
@@ -32,11 +39,6 @@ const getMember = async (account: Account) => {
   } catch (error) {
     console.error(error);
   }
-};
-
-const getRoles = async (account: Account) => {
-  const member = await getMember(account);
-  return member ? member.roles : null;
 };
 
 /**
@@ -68,19 +70,20 @@ declare module "next-auth" {
 export const authOptions: NextAuthOptions = {
   callbacks: {
     async signIn({ user, account, profile }) {
-      if (account) {
-        const roles = await getRoles(account);
-        if (roles && memberRoleIds.some((role) => roles.includes(role))) {
-          return true; //TODO: Redirect to error page (not allowed to sign in)
-        }
+      const roles = await getMember(user).then((data) => data?.roles);
+
+      if (roles && memberRoleIds.some((role) => roles.includes(role))) {
+        return true;
       }
-      return false;
+
+      return false; //TODO: Redirect to error page (not allowed to sign in)
     },
-    session: ({ session, user }) => ({
+    session: async ({ session, user }) => ({
       ...session,
       user: {
         ...session.user,
         id: user.id,
+        roles: await getMember(user).then((data) => data?.roles),
       },
     }),
   },
@@ -95,15 +98,6 @@ export const authOptions: NextAuthOptions = {
         },
       },
     }),
-    /**
-     * ...add more providers here.
-     *
-     * Most other providers require a bit more work than the Discord provider. For example, the
-     * GitHub provider requires you to add the `refresh_token_expires_in` field to the Account
-     * model. Refer to the NextAuth.js docs for the provider you want to use. Example:
-     *
-     * @see https://next-auth.js.org/providers/github
-     */
   ],
 };
 
