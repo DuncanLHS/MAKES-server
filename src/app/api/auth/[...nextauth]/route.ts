@@ -10,6 +10,7 @@ import DiscordProvider from "next-auth/providers/discord";
 import { PrismaAdapter } from "@next-auth/prisma-adapter";
 import { env } from "@/env.mjs";
 import { prisma } from "prisma/db";
+import { signOut } from "next-auth/react";
 
 const guildId = "1071217231515615282"; //TODO: Move guild id to db
 const memberRoleIds = ["1071217231536599133", "1071217231536599132"]; //TODO: Move member role ids to db
@@ -21,23 +22,25 @@ const getMember = async (user: User) => {
       userId: user.id,
     },
   });
-  try {
-    return await fetch(
-      `https://discord.com/api/guilds/${guildId}/members/${
-        account!.providerAccountId
-      }`,
-      {
-        headers: {
-          Authorization: `Bot ${process.env.DISCORD_BOT_TOKEN as string}`,
-        },
-      }
-    )
-      .then((res) => res.json())
-      .then((data: APIGuildMember) => {
-        return data;
-      });
-  } catch (error) {
-    console.error(error);
+  if (account) {
+    try {
+      return await fetch(
+        `https://discord.com/api/guilds/${guildId}/members/${account.providerAccountId}`,
+        {
+          headers: {
+            Authorization: `Bot ${process.env.DISCORD_BOT_TOKEN as string}`,
+          },
+        }
+      )
+        .then((res) => res.json())
+        .then((data: APIGuildMember) => {
+          return data;
+        });
+    } catch (error) {
+      console.error(error);
+    }
+  } else {
+    return undefined;
   }
 };
 
@@ -51,6 +54,8 @@ declare module "next-auth" {
   interface Session extends DefaultSession {
     user: {
       id: string;
+      roles?: string[];
+      nick?: string;
       // ...other properties
       // role: UserRole;
     } & DefaultSession["user"];
@@ -69,23 +74,38 @@ declare module "next-auth" {
  */
 export const authOptions: NextAuthOptions = {
   callbacks: {
-    signIn: async ({ user, account, profile }) => {
-      const roles = await getMember(user).then((data) => data?.roles);
+    signIn: async ({ user }) => {
+      const member = await getMember(user);
+      if (!member) {
+        return false; //TODO: Redirect to error page (not a member)
+      }
+      const roles = member.roles;
 
       if (roles && memberRoleIds.some((role) => roles.includes(role))) {
         return true;
       }
 
-      return false; //TODO: Redirect to error page (not allowed to sign in)
+      return false; //TODO: Redirect to error page (doesn't hold member role)
     },
-    session: async ({ session, user }) => ({
-      ...session,
-      user: {
+    session: async ({ session, user }) => {
+      const member = await getMember(user);
+      if (!member) {
+        await signOut({ callbackUrl: "/" });
+      }
+      const roles = member?.roles;
+      const nick = member?.nick;
+      if (!roles || !memberRoleIds.some((role) => roles.includes(role))) {
+        await signOut({ callbackUrl: "/" });
+      }
+
+      session.user = {
         ...session.user,
         id: user.id,
-        roles: await getMember(user).then((data) => data?.roles),
-      },
-    }),
+        roles: roles ?? undefined,
+        nick: nick ?? undefined,
+      };
+      return session;
+    },
   },
   adapter: PrismaAdapter(prisma),
   providers: [

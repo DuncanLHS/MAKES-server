@@ -50,7 +50,7 @@ function page() {
 }
 
 const AuthShowcase: React.FC = () => {
-  const { data: sessionData, status } = useSession();
+  const { data: sessionData } = useSession();
 
   return (
     <div className="flex flex-col items-center justify-center gap-4">
