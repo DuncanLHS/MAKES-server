@@ -1,11 +1,16 @@
 "use client";
 import { Dropdown, Avatar, Navbar } from "flowbite-react";
+import { signOut, useSession } from "next-auth/react";
+import { useRouter } from "next/navigation";
 import { type FC } from "react";
 
 const Navigation: FC = () => {
+  const router = useRouter();
+  const { data } = useSession();
+  if (!data) return null;
   return (
     <Navbar fluid rounded>
-      <Navbar.Brand href="https://flowbite.com/">
+      <Navbar.Brand href="/">
         {/* <img
           alt="Flowbite Logo"
           className="mr-3 h-6 sm:h-9"
@@ -19,23 +24,25 @@ const Navigation: FC = () => {
         <Dropdown
           inline
           label={
-            <Avatar
-              alt="User settings"
-              img="https://flowbite.com/docs/images/people/profile-picture-5.jpg"
-              rounded
-            />
+            <Avatar alt="User settings" img={data?.user.image ?? ""} rounded />
           }
         >
           <Dropdown.Header>
-            <span className="block text-sm">Bonnie Green</span>
+            <span className="block text-sm">
+              {data?.user.nick ?? data?.user.name}
+            </span>
             <span className="block truncate text-sm font-medium">
-              name@flowbite.com
+              {data?.user?.email}
             </span>
           </Dropdown.Header>
-          <Dropdown.Item>My Profile</Dropdown.Item>
+          <Dropdown.Item onClick={() => router.push("/profile")}>
+            My Profile
+          </Dropdown.Item>
           <Dropdown.Item>Settings</Dropdown.Item>
           <Dropdown.Divider />
-          <Dropdown.Item>Sign out</Dropdown.Item>
+          <Dropdown.Item onClick={() => void signOut({ callbackUrl: "/" })}>
+            Sign out
+          </Dropdown.Item>
         </Dropdown>
         <Navbar.Toggle />
       </div>

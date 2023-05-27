@@ -1,3 +1,4 @@
+"use client";
 import { signIn } from "next-auth/react";
 import React from "react";
 
@@ -5,7 +6,7 @@ const SignInWithDiscord = () => {
   return (
     <button
       type="button"
-      className="mb-2 mr-2 inline-flex items-center gap-2 rounded-lg bg-[#7289da] px-5 py-2.5 text-center font-medium text-white hover:bg-[#7289da]/80 focus:outline-none focus:ring-4 focus:ring-[#24292F]/50 dark:hover:bg-[#050708]/30 dark:focus:ring-gray-500"
+      className="inline-flex items-center gap-2 rounded-lg bg-[#7289da] px-5 py-2.5 text-center font-medium text-white hover:bg-[#7289da]/80 focus:outline-none focus:ring-4 focus:ring-[#24292F]/50 dark:hover:bg-[#050708]/30 dark:focus:ring-gray-500"
       onClick={() => void signIn("discord", { callbackUrl: "/" })}
     >
       <svg

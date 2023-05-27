@@ -15,7 +15,7 @@ export default function RootLayout({
       <Head>
         <meta charSet="utf-8" />
         <meta name="viewport" content="width=device-width, initial-scale=1" />
-        <meta property="og:title" content="MAKES Server" />
+        <meta property="og:title" content="M.A.K.E.S. Server" />
       </Head>
       <body className="flex h-screen flex-col">
         <NextAuthProvider>
