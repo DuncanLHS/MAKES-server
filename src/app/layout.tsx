@@ -1,5 +1,7 @@
+import Navigation from "@/app/components/ui/Navigation";
 import { NextAuthProvider } from "./providers";
 import "@/styles/globals.css";
+import Head from "next/head";
 
 export default function RootLayout({
   // Layouts must accept a children prop.
@@ -10,8 +12,16 @@ export default function RootLayout({
 }) {
   return (
     <html lang="en">
-      <body>
-        <NextAuthProvider>{children}</NextAuthProvider>
+      <Head>
+        <meta charSet="utf-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1" />
+        <meta property="og:title" content="MAKES Server" />
+      </Head>
+      <body className="flex h-screen flex-col">
+        <NextAuthProvider>
+          <Navigation />
+          {children}
+        </NextAuthProvider>
       </body>
     </html>
   );
