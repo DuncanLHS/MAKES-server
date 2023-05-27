@@ -15,17 +15,22 @@ import { signOut } from "next-auth/react";
 const guildId = "1071217231515615282"; //TODO: Move guild id to db
 const memberRoleIds = ["1071217231536599133", "1071217231536599132"]; //TODO: Move member role ids to db
 
-const getMember = async (user: User) => {
-  //https://discord.com/developers/docs/resources/guild#get-guild-member
+const getAccount = async (user: User) => {
   const account = await prisma.account.findFirst({
     where: {
       userId: user.id,
     },
   });
-  if (account) {
+  return account;
+};
+
+const getMember = async (providerAccountId: string) => {
+  //https://discord.com/developers/docs/resources/guild#get-guild-member
+
+  if (providerAccountId) {
     try {
       return await fetch(
-        `https://discord.com/api/guilds/${guildId}/members/${account.providerAccountId}`,
+        `https://discord.com/api/guilds/${guildId}/members/${providerAccountId}`,
         {
           headers: {
             Authorization: `Bot ${process.env.DISCORD_BOT_TOKEN as string}`,
@@ -74,8 +79,10 @@ declare module "next-auth" {
  */
 export const authOptions: NextAuthOptions = {
   callbacks: {
-    signIn: async ({ user }) => {
-      const member = await getMember(user);
+    signIn: async ({ account }) => {
+      const member = account
+        ? await getMember(account.providerAccountId)
+        : null;
       if (!member) {
         return false; //TODO: Redirect to error page (not a member)
       }
@@ -88,7 +95,10 @@ export const authOptions: NextAuthOptions = {
       return false; //TODO: Redirect to error page (doesn't hold member role)
     },
     session: async ({ session, user }) => {
-      const member = await getMember(user);
+      const account = await getAccount(user);
+      const member = account
+        ? await getMember(account.providerAccountId)
+        : null;
       if (!member) {
         await signOut({ callbackUrl: "/" });
       }
