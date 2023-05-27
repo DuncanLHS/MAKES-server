@@ -69,7 +69,7 @@ declare module "next-auth" {
  */
 export const authOptions: NextAuthOptions = {
   callbacks: {
-    async signIn({ user, account, profile }) {
+    signIn: async ({ user, account, profile }) => {
       const roles = await getMember(user).then((data) => data?.roles);
 
       if (roles && memberRoleIds.some((role) => roles.includes(role))) {
