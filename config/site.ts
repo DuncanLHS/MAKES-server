@@ -9,5 +9,7 @@ export const siteConfig = {
       href: "/",
     },
   ],
-  links: {},
+  links: {
+    github: "https://github.com/LittleHobbyShop/MAKES-server",
+  },
 };

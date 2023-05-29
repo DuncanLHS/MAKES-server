@@ -1,14 +1,28 @@
-import Navigation from "@/components/ui/Navigation";
-import { NextAuthProvider } from "./providers";
+import { NextAuthProvider } from "@/components/AuthProvider";
+import { ThemeProvider } from "@/components/ThemeProvider";
 import "@/styles/globals.css";
-import Head from "next/head";
-import { Inter } from "next/font/google";
+import { siteConfig } from "@/config/site";
+import { type Metadata } from "next";
+import { cn } from "@/lib/utils";
+import { fontSans } from "@/lib/fonts";
+import { SiteHeader } from "@/components/SiteHeader";
 
-const inter = Inter({
-  subsets: ["latin"],
-  variable: "--font-sans",
-  display: "swap",
-});
+export const metadata: Metadata = {
+  title: {
+    default: siteConfig.name,
+    template: `%s - ${siteConfig.name}`,
+  },
+  description: siteConfig.description,
+  themeColor: [
+    { media: "(prefers-color-scheme: light)", color: "white" },
+    { media: "(prefers-color-scheme: dark)", color: "black" },
+  ],
+  icons: {
+    icon: "/favicon.ico",
+    shortcut: "/favicon-16x16.png",
+    apple: "/apple-touch-icon.png",
+  },
+};
 
 export default function RootLayout({
   // Layouts must accept a children prop.
@@ -18,23 +32,22 @@ export default function RootLayout({
   children: React.ReactNode;
 }) {
   return (
-    <html lang="en">
-      <Head>
-        <meta charSet="utf-8" />
-        <meta name="viewport" content="width=device-width, initial-scale=1" />
-        <meta property="og:title" content="M.A.K.E.S. Server" />
-      </Head>
-      <body className={`${inter.variable} flex h-screen flex-col font-sans`}>
-        <NextAuthProvider>
-          <Navigation />
-          {children}
-        </NextAuthProvider>
+    <html lang="en" suppressHydrationWarning>
+      <body
+        className={cn(
+          "min-h-screen bg-background font-sans antialiased",
+          fontSans.variable
+        )}
+      >
+        <ThemeProvider attribute="class" defaultTheme="system" enableSystem>
+          <NextAuthProvider>
+            <div className="relative flex min-h-screen flex-col">
+              <SiteHeader />
+              <div className="flex-1">{children}</div>
+            </div>
+          </NextAuthProvider>
+        </ThemeProvider>
       </body>
     </html>
   );
 }
-
-export const metadata = {
-  title: "MAKES Server",
-  description: "Welcome to MAKES Server",
-};

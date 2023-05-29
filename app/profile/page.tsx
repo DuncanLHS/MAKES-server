@@ -3,7 +3,7 @@ import User from "../../components/User";
 
 const page = () => {
   return (
-    <main className="prose flex max-w-full flex-grow flex-col items-center justify-center bg-gradient-to-b from-neutral-50 to-neutral-600">
+    <main className="prose flex h-screen max-w-full flex-grow flex-col items-center justify-center">
       {/* @ts-expect-error server component */}
       <User />
     </main>

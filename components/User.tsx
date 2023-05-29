@@ -2,6 +2,7 @@ import { User, getServerSession } from "next-auth";
 import { authOptions } from "../app/api/auth/[...nextauth]/route";
 import Image from "next/image";
 import { prisma } from "prisma/db";
+import { Card, CardContent, CardHeader, CardTitle } from "./ui/card";
 
 const isVisible = async (user: User) => {
   return await prisma.profile
@@ -27,11 +28,11 @@ const User = async ({}) => {
   const session = await getServerSession(authOptions);
   const { user } = session || {};
   return (
-    <div>
-      <h1>My Profile</h1>
+    <Card>
       {!user ? null : (
-        <section className="flex min-w-full flex-col rounded-lg bg-neutral-200 p-4">
-          <div className="flex flex-row items-center justify-between">
+        <CardContent className="flex min-w-full flex-col rounded-lg p-4">
+          <CardTitle>My Profile</CardTitle>
+          <CardHeader className="flex flex-row items-center justify-between">
             <Image
               className="m-2 rounded-lg"
               src={user?.image ?? ""}
@@ -40,23 +41,26 @@ const User = async ({}) => {
               alt="profile image"
             />
             <h3>{user?.nick ?? user?.name}</h3>
-          </div>
-          <div className="grid grid-cols-2">
-            <span>Email</span>
-            <span>{user?.email}</span>
-
-            <span>{'Name me on "who\'s in"'}</span>
-            <span>{await isVisible(user)}</span>
-            <span>Roles</span>
-            <span>
+          </CardHeader>
+          <div className="flex flex-col">
+            <label htmlFor="email">Email</label>
+            <span id="email" className="ml-4 text-sm text-muted-foreground">
+              {user?.email}
+            </span>
+            <label htmlFor="isVisible">{'Name me on "who\'s in"'}</label>
+            <span id="isVisible" className="ml-4 text-sm text-muted-foreground">
+              {await isVisible(user)}
+            </span>
+            <label htmlFor="roles">Roles</label>
+            <span id="role" className="ml-4 text-sm text-muted-foreground">
               {user?.roles?.map((role) => (
                 <div key={role}>{role}</div>
               ))}
             </span>
           </div>
-        </section>
+        </CardContent>
       )}
-    </div>
+    </Card>
   );
 };
 

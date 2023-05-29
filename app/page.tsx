@@ -19,8 +19,8 @@ async function page() {
   };
 
   return (
-    <main className="prose flex max-w-full flex-grow flex-col items-center justify-center bg-gradient-to-b from-neutral-50 to-neutral-600">
-      {content()}
+    <main className="flex h-screen max-w-full flex-grow flex-col items-center justify-center">
+      <section className="flex flex-col items-center">{content()}</section>
     </main>
   );
 }
