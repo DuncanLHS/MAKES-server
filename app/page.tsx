@@ -1,5 +1,5 @@
 import { getServerSession } from "next-auth";
-import SignInWithDiscord from "./components/SignInWithDiscord";
+import SignInWithDiscord from "../components/SignInWithDiscord";
 import { authOptions } from "./api/auth/[...nextauth]/route";
 
 async function page() {
