@@ -2,6 +2,13 @@ import Navigation from "@/app/components/ui/Navigation";
 import { NextAuthProvider } from "./providers";
 import "@/styles/globals.css";
 import Head from "next/head";
+import { Inter } from "next/font/google";
+
+const inter = Inter({
+  subsets: ["latin"],
+  variable: "--font-sans",
+  display: "swap",
+});
 
 export default function RootLayout({
   // Layouts must accept a children prop.
@@ -17,7 +24,7 @@ export default function RootLayout({
         <meta name="viewport" content="width=device-width, initial-scale=1" />
         <meta property="og:title" content="M.A.K.E.S. Server" />
       </Head>
-      <body className="flex h-screen flex-col">
+      <body className={`${inter.variable} flex h-screen flex-col font-sans`}>
         <NextAuthProvider>
           <Navigation />
           {children}
