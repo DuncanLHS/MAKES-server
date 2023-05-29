@@ -1,4 +1,4 @@
-import Navigation from "@/app/components/ui/Navigation";
+import Navigation from "@/components/ui/Navigation";
 import { NextAuthProvider } from "./providers";
 import "@/styles/globals.css";
 import Head from "next/head";
