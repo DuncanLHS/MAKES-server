@@ -1,13 +1,10 @@
+import { fontFamily } from "tailwindcss/defaultTheme";
 import { type Config } from "tailwindcss";
 
-import { fontFamily } from "tailwindcss/defaultTheme";
-
-export default {
-  content: [
-    "./node_modules/flowbite-react/**/*.js",
-    "./app/**/*.{js,ts,jsx,tsx,mdx}",
-  ],
+/** @type {import('tailwindcss').Config} */
+const config: Config = {
   darkMode: ["class"],
+  content: ["app/**/*.{ts,tsx}", "components/**/*.{ts,tsx}"],
   theme: {
     container: {
       center: true,
@@ -77,4 +74,6 @@ export default {
     },
   },
   plugins: [require("tailwindcss-animate")],
-} satisfies Config;
+};
+
+export default config;
