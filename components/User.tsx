@@ -2,7 +2,7 @@ import { User, getServerSession } from "next-auth";
 import { authOptions } from "../app/api/auth/[...nextauth]/route";
 import Image from "next/image";
 import { prisma } from "prisma/db";
-import { Card, CardContent, CardHeader, CardTitle } from "./ui/Card";
+import { Card, CardContent, CardHeader, CardTitle } from "@ui/Card";
 import { type FC } from "react";
 
 const isVisible = async (user: User) => {
