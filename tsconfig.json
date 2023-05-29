@@ -25,7 +25,7 @@
       "@/*": [
         "./*"
       ],
-      "@ui/*":["./app/components/ui/*"]
+      "@ui/*":["./components/ui/*"]
     },
     "plugins": [
       {
