@@ -80,6 +80,9 @@ export const authOptions: NextAuthOptions = {
       };
       return session;
     },
+    redirect: ({ url, baseUrl }) => {
+      return baseUrl;
+    },
   },
   adapter: PrismaAdapter(prisma),
   providers: [
