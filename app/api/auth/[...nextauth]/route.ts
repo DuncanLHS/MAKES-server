@@ -3,51 +3,15 @@ import NextAuth, {
   getServerSession,
   type NextAuthOptions,
   type DefaultSession,
-  type User,
 } from "next-auth";
-import type { APIGuildMember } from "discord-api-types/v10";
 import DiscordProvider from "next-auth/providers/discord";
 import { PrismaAdapter } from "@next-auth/prisma-adapter";
 import { env } from "@/env.mjs";
 import { prisma } from "prisma/db";
 import { signOut } from "next-auth/react";
+import { getAccount, getMember } from "@/lib/discord";
 
-const guildId = "1071217231515615282"; //TODO: Move guild id to db
 const memberRoleIds = ["1071217231536599133", "1071217231536599132"]; //TODO: Move member role ids to db
-
-const getAccount = async (user: User) => {
-  const account = await prisma.account.findFirst({
-    where: {
-      userId: user.id,
-    },
-  });
-  return account;
-};
-
-const getMember = async (providerAccountId: string) => {
-  //https://discord.com/developers/docs/resources/guild#get-guild-member
-
-  if (providerAccountId) {
-    try {
-      return await fetch(
-        `https://discord.com/api/guilds/${guildId}/members/${providerAccountId}`,
-        {
-          headers: {
-            Authorization: `Bot ${process.env.DISCORD_BOT_TOKEN as string}`,
-          },
-        }
-      )
-        .then((res) => res.json())
-        .then((data: APIGuildMember) => {
-          return data;
-        });
-    } catch (error) {
-      console.error(error);
-    }
-  } else {
-    return undefined;
-  }
-};
 
 /**
  * Module augmentation for `next-auth` types. Allows us to add custom properties to the `session`
@@ -120,8 +84,8 @@ export const authOptions: NextAuthOptions = {
   adapter: PrismaAdapter(prisma),
   providers: [
     DiscordProvider({
-      clientId: process.env.DISCORD_CLIENT_ID as string,
-      clientSecret: process.env.DISCORD_CLIENT_SECRET as string,
+      clientId: env.DISCORD_CLIENT_ID,
+      clientSecret: env.DISCORD_CLIENT_SECRET,
       authorization: {
         params: {
           scope: "identify email guilds",

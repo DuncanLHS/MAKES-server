@@ -4,6 +4,8 @@ import Image from "next/image";
 import { prisma } from "prisma/db";
 import { Card, CardContent, CardHeader, CardTitle } from "@ui/Card";
 import { type FC } from "react";
+import UserRoles from "./UserRoles";
+import { getRoleDetails } from "@/lib/discord";
 
 const isVisible = async (user: User) => {
   return await prisma.profile
@@ -66,9 +68,10 @@ const User = async ({}) => {
               {await isVisible(user)}
             </ProfileItem>
             <ProfileItem id="roles" label="Roles">
-              {user?.roles?.map((role) => (
-                <div key={role}>{role}</div>
-              ))}
+              {user.roles ? (
+                // @ts-expect-error server component
+                <UserRoles roleIds={user.roles} />
+              ) : null}
             </ProfileItem>
           </div>
         </CardContent>
