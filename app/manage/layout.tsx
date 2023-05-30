@@ -7,9 +7,9 @@ export default function ManageLayout({
   children: React.ReactNode;
 }) {
   return (
-    <nav className="mx-auto">
+    <>
       <ManageNav />
       {children}
-    </nav>
+    </>
   );
 }
