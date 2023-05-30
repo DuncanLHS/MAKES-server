@@ -1,6 +1,6 @@
 import { type User } from "next-auth";
 const guildId = "1071217231515615282"; //TODO: Move guild id to db
-import type { APIGuildMember, APIRole } from "discord-api-types/v10";
+import type { APIGuild, APIGuildMember, APIRole } from "discord-api-types/v10";
 import { type Account } from "@prisma/client";
 import { prisma } from "prisma/db";
 
@@ -71,4 +71,22 @@ export const getRoleDetails = async (
   if (!serverRoles) return undefined;
   const roles = serverRoles.filter((role) => roleIds.includes(role.id));
   return roles;
+};
+
+export const getGuilds = async () => {
+  //https://discord.com/developers/docs/resources/user#get-current-user-guilds
+
+  try {
+    return await fetch(`${discordApiBaseUrl}/users/@me/guilds`, {
+      headers: {
+        Authorization: `Bot ${process.env.DISCORD_BOT_TOKEN as string}`,
+      },
+    })
+      .then((res) => res.json())
+      .then((data: APIGuild[]) => {
+        return data;
+      });
+  } catch (error) {
+    console.error(error);
+  }
 };
