@@ -5,7 +5,6 @@ import { prisma } from "prisma/db";
 import { Card, CardContent, CardHeader, CardTitle } from "@ui/Card";
 import { type FC } from "react";
 import UserRoles from "./UserRoles";
-import { getRoleDetails } from "@/lib/discord";
 
 const isVisible = async (user: User) => {
   return await prisma.profile
@@ -32,21 +31,20 @@ const User = async ({}) => {
   const { user } = session || {};
   if (!user) return null;
   return (
-    <Card>
+    <Card className="max-w-2xl">
       {!user ? null : (
         <CardContent className="flex min-w-full flex-col rounded-lg p-4">
-          <CardTitle>
-            <h2 className="scroll-m-20 border-b pb-2 text-3xl font-semibold tracking-tight transition-colors first:mt-0">
-              My Profile
-            </h2>
+          <CardTitle className="scroll-m-20 text-2xl font-semibold tracking-tight">
+            My Profile
           </CardTitle>
-          <CardHeader className="flex flex-row items-center justify-between gap-4">
+          <CardHeader className="flex flex-row items-center gap-4">
             <Image
               className="m-2 rounded-lg"
               src={user?.image ?? ""}
               width={120}
               height={120}
               alt="profile image"
+              priority
             />
             <div className="block">
               <ProfileItem id="name" label="Name">
@@ -61,9 +59,9 @@ const User = async ({}) => {
             </h3> */}
           </CardHeader>
           <div className="flex flex-col">
-            <ProfileItem id="email" label="Email">
+            {/* <ProfileItem id="email" label="Email">
               {user?.email}
-            </ProfileItem>
+            </ProfileItem> */}
             <ProfileItem id="is-visible" label={`Show name on Who's In`}>
               {await isVisible(user)}
             </ProfileItem>
