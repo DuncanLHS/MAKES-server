@@ -1,5 +1,4 @@
 "use client";
-
 import { Check, ChevronsUpDown } from "lucide-react";
 
 import { cn } from "@/lib/utils";
@@ -8,7 +7,6 @@ import {
   Command,
   CommandEmpty,
   CommandGroup,
-  CommandInput,
   CommandItem,
 } from "@/components/ui/Command";
 import {
@@ -24,7 +22,12 @@ import {
   FormLabel,
   FormMessage,
 } from "@/components/forms/Form";
-import { type FieldValues, type UseFormReturn } from "react-hook-form";
+import {
+  type Path,
+  type FieldValues,
+  type UseFormReturn,
+  type PathValue,
+} from "react-hook-form";
 
 const languages = [
   { label: "English", value: "en" },
@@ -38,15 +41,20 @@ const languages = [
   { label: "Chinese", value: "zh" },
 ] as const;
 
-interface RolePickerProps {
-  form: UseFormReturn<FieldValues>;
+interface RolePickerProps<T extends FieldValues> {
+  form: UseFormReturn<T>;
+  name: Path<T>;
 }
 
-export function RolePicker({ form }: RolePickerProps) {
+export function RolePicker<T extends FieldValues>({
+  form,
+  name,
+}: RolePickerProps<T>) {
+  if (!languages) return null;
   return (
     <FormField
       control={form.control}
-      name="language"
+      name={name}
       render={({ field }) => (
         <FormItem className="flex flex-col">
           <FormLabel>Language</FormLabel>
@@ -71,8 +79,8 @@ export function RolePicker({ form }: RolePickerProps) {
               </FormControl>
             </PopoverTrigger>
             <PopoverContent className="w-[200px] p-0">
-              <Command>
-                <CommandInput placeholder="Search framework..." />
+              <Command shouldFilter={false}>
+                {/* <CommandInput placeholder="Search framework..." /> */}
                 <CommandEmpty>No framework found.</CommandEmpty>
                 <CommandGroup>
                   {languages.map((language) => (
@@ -80,7 +88,7 @@ export function RolePicker({ form }: RolePickerProps) {
                       value={language.value}
                       key={language.value}
                       onSelect={(value) => {
-                        form.setValue("language", value);
+                        form.setValue(name, value as PathValue<T, Path<T>>);
                       }}
                     >
                       <Check
