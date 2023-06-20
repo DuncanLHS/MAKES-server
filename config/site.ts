@@ -8,6 +8,10 @@ export const siteConfig = {
       title: "Home",
       href: "/",
     },
+    {
+      title: "Manage",
+      href: "/manage",
+    },
   ],
   links: {
     github: "https://github.com/LittleHobbyShop/MAKES-server",
