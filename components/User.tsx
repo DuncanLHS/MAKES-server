@@ -66,10 +66,7 @@ const User = async ({}) => {
               {await isVisible(user)}
             </ProfileItem>
             <ProfileItem id="roles" label="Roles">
-              {user.roles ? (
-                // @ts-expect-error server component
-                <UserRoles roleIds={user.roles} />
-              ) : null}
+              {user.roles ? <UserRoles roleIds={user.roles} /> : null}
             </ProfileItem>
           </div>
         </CardContent>
