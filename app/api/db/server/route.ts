@@ -1,5 +1,6 @@
 import { prisma } from "@/prisma/db";
 import { type Server } from "@prisma/client";
+import { revalidateTag } from "next/cache";
 import { type NextRequest, NextResponse } from "next/server";
 
 const guildId = "1071217231515615282";
@@ -28,6 +29,9 @@ export async function POST(req: NextRequest) {
         { status: 500 }
       );
     }
+
+    revalidateTag("server");
+
     const res = await prisma.server.upsert({
       where: {
         guildId: guildId,

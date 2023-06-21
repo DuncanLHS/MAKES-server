@@ -25,6 +25,7 @@ export const env = createEnv({
     DISCORD_CLIENT_ID: z.string(),
     DISCORD_CLIENT_SECRET: z.string(),
     DISCORD_BOT_TOKEN: z.string(),
+    API_URL: z.string().url(),
   },
 
   /**
@@ -49,5 +50,6 @@ export const env = createEnv({
     DISCORD_CLIENT_ID: process.env.DISCORD_CLIENT_ID,
     DISCORD_CLIENT_SECRET: process.env.DISCORD_CLIENT_SECRET,
     DISCORD_BOT_TOKEN: process.env.DISCORD_BOT_TOKEN,
+    API_URL: process.env.API_URL,
   },
 });

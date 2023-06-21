@@ -1,9 +1,24 @@
 import { getGuilds } from "@/lib/discord";
 import ServerCard from "@/components/ServerCard";
+import { env } from "process";
+import { type Server } from "@prisma/client";
+
+const getServer = async () => {
+  // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+  const server = await fetch(`${env.API_URL!}/api/db/server`, {
+    next: { tags: ["server"] },
+  }).then((res) => {
+    if (res.ok) return res.json() as Promise<Server>;
+    else return null;
+  });
+  return server;
+};
 
 const page = async () => {
   const guildArr = await getGuilds();
-  if (!guildArr)
+  const server = await getServer();
+
+  if (!guildArr || !server)
     return (
       <p className="text-destructive-foreground">
         Error fetching discord servers. Please try again later.
@@ -24,7 +39,7 @@ const page = async () => {
       </h1>
       <section className="flex flex-wrap gap-4">
         {guildArr.map((guild) => {
-          return <ServerCard guild={guild} key={guild.id} />;
+          return <ServerCard guild={guild} key={guild.id} server={server} />;
         })}
       </section>
     </main>
