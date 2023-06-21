@@ -17,7 +17,7 @@ const FormSchema = z.object({
   userRoleIds: z
     .string()
     .array()
-    .min(1, { message: "Must have at least one admin role" }),
+    .min(1, { message: "Must have at least one user role" }),
 });
 
 interface ServerSettingsFormProps {
