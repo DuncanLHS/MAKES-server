@@ -44,6 +44,7 @@ declare module "next-auth" {
 export const authOptions: NextAuthOptions = {
   callbacks: {
     signIn: async ({ account }) => {
+      console.log("session callback");
       const member = account
         ? await getMember(account.providerAccountId)
         : null;
@@ -59,6 +60,7 @@ export const authOptions: NextAuthOptions = {
       return false; //TODO: Redirect to error page (doesn't hold member role)
     },
     session: async ({ session, user }) => {
+      console.log("session callback");
       const account = await getAccount(user);
       const member = account
         ? await getMember(account.providerAccountId)
@@ -79,9 +81,6 @@ export const authOptions: NextAuthOptions = {
         nick: nick ?? undefined,
       };
       return session;
-    },
-    redirect: ({ url, baseUrl }) => {
-      return baseUrl;
     },
   },
   adapter: PrismaAdapter(prisma),

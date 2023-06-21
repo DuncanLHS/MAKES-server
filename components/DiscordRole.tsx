@@ -10,11 +10,10 @@ interface DiscordRoleProps {
 const DiscordRole = ({ role, className }: DiscordRoleProps) => {
   const bgColor: string | null =
     role.color !== 0 ? `#${role.color.toString(16).padStart(6, "0")}` : null;
-  console.log(role.name, role.color, bgColor);
   return (
     <Badge
       variant={"default"}
-      className={cn("text-sm", className)}
+      className={cn("max-h-6 text-sm", className)}
       style={{ backgroundColor: `${bgColor ?? "#ffffff"}` }}
     >
       {role.name}

@@ -6,6 +6,7 @@ import { type Metadata } from "next";
 import { cn } from "@/lib/utils";
 import { fontSans } from "@/lib/fonts";
 import { SiteHeader } from "@/components/SiteHeader";
+import { Toaster } from "@ui/Toaster";
 
 export const metadata: Metadata = {
   title: {
@@ -47,6 +48,7 @@ export default function RootLayout({
             </div>
           </NextAuthProvider>
         </ThemeProvider>
+        <Toaster />
       </body>
     </html>
   );
