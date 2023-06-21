@@ -22,7 +22,7 @@ const ServerCard = ({ guild, server }: ServerCardProps) => {
   return (
     <QueryClientProvider client={queryClient}>
       {!server ? null : (
-        <Card key={id} className="w-96">
+        <Card key={id} className="">
           <CardHeader className="flex-row gap-4">
             <Image src={imgSrc} alt={` icon`} height={48} width={48} />
             <CardTitle className="text-2xl">{name}</CardTitle>

@@ -15,12 +15,19 @@ import { Skeleton } from "@ui/Skeleton";
 import { Trash2 } from "lucide-react";
 import { RoleSelect } from "./RoleSelect";
 
-interface RoleSelectProps {
+interface RoleArrayFieldProps {
   value: string[];
   onChange: (roleIds: string[]) => void;
+  header: string;
+  description?: string;
 }
 
-const RoleArrayField = ({ value, onChange }: RoleSelectProps) => {
+const RoleArrayField = ({
+  value,
+  onChange,
+  header,
+  description,
+}: RoleArrayFieldProps) => {
   const [selectValue, setSelectValue] = useState(undefined);
   const guildRoles = useGuildRoles();
 
@@ -37,10 +44,10 @@ const RoleArrayField = ({ value, onChange }: RoleSelectProps) => {
 
   return (
     <FormItem>
-      <Table>
+      <Table className="w-full max-w-sm">
         <TableHeader>
           <TableRow>
-            <TableHead>Admin Roles</TableHead>
+            <TableHead>{header}</TableHead>
           </TableRow>
         </TableHeader>
         <TableBody>
@@ -95,10 +102,7 @@ const RoleArrayField = ({ value, onChange }: RoleSelectProps) => {
                 />
               )}
               <FormMessage />
-              <FormDescription>
-                These roles allow full administrative access to the server
-                settings. Minimum one role is required.
-              </FormDescription>
+              <FormDescription>{description}</FormDescription>
             </TableCell>
           </TableRow>
         </TableBody>
