@@ -1,5 +1,5 @@
-import { useServer, useGuildRoles } from "@/hooks";
-import React from "react";
+import { useServerQuery, useGuildRoles, useServerMutation } from "@/hooks";
+import React, { useEffect } from "react";
 import { useForm } from "react-hook-form";
 
 import {
@@ -11,7 +11,7 @@ import {
   FormLabel,
   FormMessage,
 } from "./Form";
-import { Button } from "../ui/Button";
+import { Button } from "@ui/Button";
 import {
   Table,
   TableBody,
@@ -19,22 +19,25 @@ import {
   TableHead,
   TableHeader,
   TableRow,
-} from "../ui/Table";
+} from "@ui/Table";
 import {
   Select,
   SelectContent,
   SelectTrigger,
   SelectValue,
   SelectItem,
-} from "../ui/Select";
-import { toast } from "../ui/UseToast";
+} from "@ui/Select";
+import { toast } from "@ui/UseToast";
 import DiscordRole from "../DiscordRole";
 import { type APIRole } from "discord-api-types/v10";
 import { Trash2 } from "lucide-react";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
+import { Skeleton } from "@ui/Skeleton";
+import { ScrollArea } from "@ui/ScrollArea";
 
 const FormSchema = z.object({
+  id: z.string(),
   adminRoleIds: z.string().array(),
 });
 
@@ -42,96 +45,87 @@ const ServerSettingsNew = () => {
   const form = useForm<z.infer<typeof FormSchema>>({
     resolver: zodResolver(FormSchema),
   });
+  const serverQuery = useServerQuery();
+  const { mutate, isSuccess, error } = useServerMutation();
+  const guildRoles = useGuildRoles();
 
-  const { isLoading: serverLoading, error, data: server } = useServer();
-  const {
-    isLoading: guidRolesLoading,
-    error: guildRolesErr,
-    data: guildRoles,
-  } = useGuildRoles();
-
-  if (!guildRoles || !server) {
-    return null;
-  }
-
-  form.setValue("adminRoleIds", server.adminRoleIds);
-
-  const onSelect = (data: string) => {
-    const selectedRole = guildRoles.find((role) => role.id === data);
-    if (!selectedRole) {
-      console.log("no role found");
+  useEffect(() => {
+    if (!serverQuery.data) {
       return;
     }
-    form.setValue("adminRoleIds", [...form.getValues("adminRoleIds"), data], {
+    form.reset(serverQuery.data);
+  }, [form, serverQuery.data]);
+
+  useEffect(() => {
+    if (error) {
+      toast({
+        title: "An error occurred.",
+        // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
+        description: error.toString(),
+      });
+      return;
+    } else if (isSuccess) {
+      toast({
+        title: "Server updated",
+      });
+    }
+  }, [error, isSuccess]);
+
+  const onSelect = (value: string) => {
+    form.setValue("adminRoleIds", [...form.getValues("adminRoleIds"), value], {
       shouldDirty: true,
     });
-    toast({
-      title: "You selected the following values:",
-      description: (
-        <pre className="mt-2 w-[340px] rounded-md bg-slate-950 p-4">
-          <code className="text-white">{JSON.stringify(data, null, 2)}</code>
-        </pre>
-      ),
-    });
-    console.log(form.getValues("adminRoleIds"));
   };
 
   const onRemove = (data: string) => {
-    const selectedRole = guildRoles.find((role) => role.id === data);
-    if (!selectedRole) {
-      console.log("no role found");
-      return;
-    }
     const newRoles = form.getValues("adminRoleIds").filter((id) => id !== data);
-    form.setValue("adminRoleIds", newRoles);
-    toast({
-      title: "You removed the following values:",
-      description: (
-        <pre className="mt-2 w-[340px] rounded-md bg-slate-950 p-4">
-          <code className="text-white">{JSON.stringify(data, null, 2)}</code>
-        </pre>
-      ),
+    form.setValue("adminRoleIds", newRoles, {
+      shouldDirty: true,
     });
-    console.log(form.getValues("adminRoleIds"));
   };
 
   function onSubmit(data: z.infer<typeof FormSchema>) {
-    toast({
-      title: "You submitted the following values:",
-      description: (
-        <pre className="mt-2 w-[340px] rounded-md bg-slate-950 p-4">
-          <code className="text-white">{JSON.stringify(data, null, 2)}</code>
-        </pre>
-      ),
-    });
+    mutate(data);
+  }
+
+  function onReset() {
+    form.reset(serverQuery.data);
   }
 
   return (
     <Form {...form}>
       <form
         onSubmit={(e) => void form.handleSubmit(onSubmit)(e)}
+        onReset={() => onReset()}
         className="w-full space-y-6"
       >
         <FormField
           control={form.control}
           name="adminRoleIds"
           render={({ field, fieldState, formState }) => (
-            <>
-              <Table>
-                <TableHeader>
+            <Table>
+              <TableHeader>
+                <TableRow>
+                  <TableHead>Admin Roles</TableHead>
+                </TableRow>
+              </TableHeader>
+              <TableBody>
+                {!serverQuery.data || !guildRoles.data || !field.value ? (
                   <TableRow>
-                    <TableHead>Admin Roles</TableHead>
+                    <TableCell className="flex items-center justify-between">
+                      <Skeleton className="h-6 w-1/2 rounded-full" />
+                      <Skeleton className="h-9 w-12" />
+                    </TableCell>
                   </TableRow>
-                </TableHeader>
-                <TableBody>
-                  {field.value.map((role) => (
+                ) : (
+                  field.value.map((role) => (
                     <TableRow key={role}>
                       <TableCell className="p-2">
                         <div className="flex w-full flex-row items-center justify-between">
                           <DiscordRole
                             role={
                               // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-                              guildRoles.filter((guildRole) => {
+                              guildRoles.data.filter((guildRole) => {
                                 return guildRole.id === role;
                               })[0]!
                             }
@@ -146,34 +140,50 @@ const ServerSettingsNew = () => {
                         </div>
                       </TableCell>
                     </TableRow>
-                  ))}
-                  <TableRow>
-                    <TableCell>
-                      <FormItem>
-                        <FormLabel>Add a Role:</FormLabel>
+                  ))
+                )}
+                <TableRow>
+                  <TableCell>
+                    <FormItem>
+                      <FormLabel>Add a Role:</FormLabel>
 
+                      {!guildRoles.data || !field.value ? (
+                        <div className="flex justify-between">
+                          <Skeleton className="h-10 w-3/4" />
+                          <Skeleton className="h-10 w-1/5" />
+                        </div>
+                      ) : (
                         <AdminRoleIdsSelect
                           onChange={onSelect}
-                          options={guildRoles.filter((role) => {
+                          options={guildRoles.data.filter((role) => {
                             return !field.value.includes(role.id);
                           })}
                         />
-                        <FormMessage />
-                        <FormDescription>
-                          These roles add full administrative access to the
-                          server settings.
-                        </FormDescription>
-                      </FormItem>
-                    </TableCell>
-                  </TableRow>
-                </TableBody>
-              </Table>
-            </>
+                      )}
+                      <FormMessage />
+                      <FormDescription>
+                        These roles allow full administrative access to the
+                        server settings. Minimum one role is required.
+                      </FormDescription>
+                    </FormItem>
+                  </TableCell>
+                </TableRow>
+              </TableBody>
+            </Table>
           )}
         />
-        <Button disabled={!form.formState.isDirty} type="submit">
-          Submit
-        </Button>
+        <div className="flex w-full flex-row justify-between">
+          <Button
+            disabled={!form.formState.isDirty}
+            type="reset"
+            variant={"destructive"}
+          >
+            Reset
+          </Button>
+          <Button disabled={!form.formState.isDirty} type="submit">
+            Save
+          </Button>
+        </div>
       </form>
     </Form>
   );
@@ -197,11 +207,13 @@ const AdminRoleIdsSelect = ({ onChange, options }: AdminRoleIdsSelectProps) => {
         </SelectTrigger>
       </FormControl>
       <SelectContent>
-        {options.map((role) => (
-          <SelectItem key={role.id} value={role.id}>
-            <DiscordRole role={role} />
-          </SelectItem>
-        ))}
+        <ScrollArea className="h-48">
+          {options.map((role) => (
+            <SelectItem key={role.id} value={role.id}>
+              <DiscordRole role={role} />
+            </SelectItem>
+          ))}
+        </ScrollArea>
       </SelectContent>
     </Select>
   );
