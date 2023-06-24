@@ -29,19 +29,27 @@ export async function GET() {
     });
     const data = (await res.json()) as APIGuildMember[];
 
-    data.filter((member) => member.user?.bot !== true);
+    const filtered = data.filter((member) => member.user?.bot !== true);
 
-    data.sort((a, b) => {
-      // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-      if ((a.nick ?? a.user!.username) < (b.nick ?? b.user!.username))
+    const sorted = filtered.sort((a, b) => {
+      if (
+        // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+        (a.nick?.toLowerCase() ?? a.user!.username.toLowerCase()) <
+        // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+        (b.nick?.toLowerCase() ?? b.user!.username.toLowerCase())
+      )
         return -1;
-      // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-      else if ((a.nick ?? a.user!.username) > (b.nick ?? b.user!.username))
+      else if (
+        // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+        (a.nick?.toLowerCase() ?? a.user!.username.toLowerCase()) >
+        // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+        (b.nick?.toLowerCase() ?? b.user!.username.toLowerCase())
+      )
         return 1;
       else return 0;
     });
 
-    return NextResponse.json(data);
+    return NextResponse.json(sorted);
   } catch (error) {
     return NextResponse.error();
   }
