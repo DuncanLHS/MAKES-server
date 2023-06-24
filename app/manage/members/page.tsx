@@ -1,15 +1,17 @@
-import { type APIGuildMember } from "discord-api-types/v10";
+import MembersTable from "@/components/members/MembersTable";
 import React from "react";
 
-const getMembers = async () => {
-  // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-  const res = await fetch(`${process.env.API_URL!}/api/discord/members`);
-  const data = (await res.json()) as APIGuildMember[];
-  return data;
-};
-
-const page = async () => {
-  return <pre>MemberData: {JSON.stringify(await getMembers(), null, 2)}</pre>;
+const page = () => {
+  return (
+    <main className="mx-auto flex h-screen max-w-6xl flex-grow flex-col p-4">
+      <h1 className="mb-4 scroll-m-20 text-4xl font-extrabold tracking-tight lg:text-5xl">
+        Members
+      </h1>
+      <section className="flex flex-wrap gap-4">
+        <MembersTable />
+      </section>
+    </main>
+  );
 };
 
 export default page;
