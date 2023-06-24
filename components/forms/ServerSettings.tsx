@@ -70,7 +70,7 @@ export default function ServerSettingsForm({
           <FormField
             control={form.control}
             name="userRoleIds"
-            render={({ field: { value, onChange }, fieldState, formState }) => (
+            render={({ field: { value, onChange } }) => (
               <RoleArrayField
                 value={value}
                 onChange={onChange}
@@ -82,7 +82,7 @@ export default function ServerSettingsForm({
           <FormField
             control={form.control}
             name="adminRoleIds"
-            render={({ field: { value, onChange }, fieldState, formState }) => (
+            render={({ field: { value, onChange } }) => (
               <RoleArrayField
                 value={value}
                 onChange={onChange}
