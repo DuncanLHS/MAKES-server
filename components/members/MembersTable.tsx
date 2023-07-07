@@ -1,15 +1,7 @@
 import { prisma } from "@/prisma/db";
-import { type APIGuildMember } from "discord-api-types/v10";
 import { DataTable } from "@ui/DataTable";
 import { columns } from "./MembersColmns";
-
-const getMembers = async () => {
-  // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-  const res = await fetch(`${process.env.API_URL!}/api/discord/members`);
-  const data = (await res.json()) as APIGuildMember[];
-
-  return data;
-};
+import { getAllMembers } from "@/lib/discord";
 
 const getUsersKeys = async () => {
   return await prisma.user.findMany({
@@ -20,8 +12,12 @@ const getUsersKeys = async () => {
 };
 
 const data = async () => {
-  const members = await getMembers();
+  const members = await getAllMembers();
   const users = await getUsersKeys();
+
+  if (!members || !users) {
+    return [];
+  }
 
   return members.map((member) => {
     const user = users.find((user) => user.id === member.user?.id);
