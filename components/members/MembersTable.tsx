@@ -34,7 +34,8 @@ const data = async () => {
 };
 
 const MembersTable = async () => {
-  return <DataTable columns={columns} data={await data()} />;
+  const tableData = await data();
+  return <DataTable columns={columns} data={tableData} />;
 };
 
 export default MembersTable;
