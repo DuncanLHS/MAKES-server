@@ -1,16 +1,15 @@
 import { getGuilds } from "@/lib/discord";
 import ServerCard from "@/components/ServerCard";
-import { env } from "process";
-import { type Server } from "@prisma/client";
+import { prisma } from "@/prisma/db";
+
+const guildId = "1071217231515615282";
 
 const getServer = async () => {
   // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-  const server = await fetch(`${env.API_URL!}/api/db/server`, {
-    next: { tags: ["server"] },
-  }).then((res) => {
-    if (res.ok) return res.json() as Promise<Server>;
-    else return null;
+  const server = await prisma.server.findUnique({
+    where: { guildId: guildId },
   });
+
   return server;
 };
 

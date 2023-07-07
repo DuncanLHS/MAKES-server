@@ -1,5 +1,10 @@
 import { type User } from "next-auth";
-import type { APIGuild, APIGuildMember, APIRole } from "discord-api-types/v10";
+import type {
+  APIGuild,
+  APIGuildMember,
+  APIRole,
+  RESTGetAPIGuildMembersQuery,
+} from "discord-api-types/v10";
 import { type Account } from "@prisma/client";
 import { prisma } from "prisma/db";
 
@@ -86,3 +91,50 @@ export async function getGuilds() {
     console.error(error);
   }
 }
+
+export const getAllMembers = async () => {
+  const params: RESTGetAPIGuildMembersQuery = {
+    limit: 1000,
+  };
+  const url = new URL(`${discordApiBaseUrl}/guilds/${guildId}/members`);
+
+  Object.keys(params).forEach((key) =>
+    url.searchParams.append(
+      key,
+      params[key as keyof RESTGetAPIGuildMembersQuery] as string
+    )
+  );
+
+  try {
+    const res = await fetch(url, {
+      headers: {
+        Authorization: `Bot ${process.env.DISCORD_BOT_TOKEN as string}`,
+      },
+    });
+    const data = (await res.json()) as APIGuildMember[];
+
+    const filtered = data.filter((member) => member.user?.bot !== true);
+
+    const sorted = filtered.sort((a, b) => {
+      if (
+        // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+        (a.nick?.toLowerCase() ?? a.user!.username.toLowerCase()) <
+        // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+        (b.nick?.toLowerCase() ?? b.user!.username.toLowerCase())
+      )
+        return -1;
+      else if (
+        // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+        (a.nick?.toLowerCase() ?? a.user!.username.toLowerCase()) >
+        // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+        (b.nick?.toLowerCase() ?? b.user!.username.toLowerCase())
+      )
+        return 1;
+      else return 0;
+    });
+
+    return sorted;
+  } catch (error) {
+    console.error(error);
+  }
+};

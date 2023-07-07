@@ -5,6 +5,9 @@ import { type NextRequest, NextResponse } from "next/server";
 
 const guildId = "1071217231515615282";
 
+// see issue https://github.com/vercel/next.js/discussions/50497
+export const dynamic = "force-dynamic";
+
 export async function GET() {
   try {
     const res = await prisma.server.findUnique({

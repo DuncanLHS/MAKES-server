@@ -4,6 +4,9 @@ import { NextResponse } from "next/server";
 const guildId = "1071217231515615282";
 const discordApiBaseUrl = "https://discord.com/api";
 
+// see issue https://github.com/vercel/next.js/discussions/50497
+export const dynamic = "force-dynamic";
+
 export async function GET() {
   try {
     const res = await fetch(`${discordApiBaseUrl}/guilds/${guildId}/roles`, {
