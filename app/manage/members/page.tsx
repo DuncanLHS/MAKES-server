@@ -8,7 +8,7 @@ const page = () => {
         Members
       </h1>
       <section className="flex flex-wrap gap-4">
-        {/* <MembersTable /> */}
+        <MembersTable />
       </section>
     </main>
   );
