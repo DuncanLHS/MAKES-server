@@ -8,6 +8,9 @@ import { NextResponse } from "next/server";
 
 const guildId = "1071217231515615282";
 
+// see issue https://github.com/vercel/next.js/discussions/50497
+export const dynamic = "force-dynamic";
+
 export async function GET() {
   const params: RESTGetAPIGuildMembersQuery = {
     limit: 1000,
