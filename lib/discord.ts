@@ -1,24 +1,12 @@
-import { type User } from "next-auth";
 import type {
   APIGuild,
   APIGuildMember,
   APIRole,
   RESTGetAPIGuildMembersQuery,
 } from "discord-api-types/v10";
-import { type Account } from "@prisma/client";
-import { prisma } from "prisma/db";
 
 const guildId = "1071217231515615282"; //TODO: Move guild id to db
 const discordApiBaseUrl = "https://discord.com/api";
-
-export async function getAccount(user: User): Promise<Account | null> {
-  const account = await prisma.account.findFirst({
-    where: {
-      userId: user.id,
-    },
-  });
-  return account;
-}
 
 export async function getMember(
   providerAccountId: string
