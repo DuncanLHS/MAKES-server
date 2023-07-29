@@ -17,6 +17,7 @@ export const getMember = async (
       return await fetch(
         `${discordApiBaseUrl}/guilds/${guildId}/members/${providerAccountId}`,
         {
+          next: { revalidate: 30 },
           headers: {
             Authorization: `Bot ${process.env.DISCORD_BOT_TOKEN as string}`,
           },
@@ -39,6 +40,7 @@ export const getServerRoles = async () => {
   //https://discord.com/developers/docs/resources/guild#get-guild-roles
   try {
     return await fetch(`${discordApiBaseUrl}/guilds/${guildId}/roles`, {
+      next: { revalidate: 30 },
       headers: {
         Authorization: `Bot ${process.env.DISCORD_BOT_TOKEN as string}`,
       },
@@ -95,6 +97,7 @@ export const getAllMembers = async () => {
 
   try {
     const res = await fetch(url, {
+      next: { revalidate: 30 },
       headers: {
         Authorization: `Bot ${process.env.DISCORD_BOT_TOKEN as string}`,
       },
