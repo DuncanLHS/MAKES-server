@@ -8,9 +8,9 @@ import type {
 const guildId = "1071217231515615282"; //TODO: Move guild id to db
 const discordApiBaseUrl = "https://discord.com/api";
 
-export async function getMember(
+export const getMember = async (
   providerAccountId: string
-): Promise<APIGuildMember | undefined> {
+): Promise<APIGuildMember | undefined> => {
   //https://discord.com/developers/docs/resources/guild#get-guild-member
   if (providerAccountId) {
     try {
@@ -32,9 +32,9 @@ export async function getMember(
   } else {
     return undefined;
   }
-}
+};
 
-export async function getServerRoles() {
+export const getServerRoles = async () => {
   //https://discord.com/developers/docs/topics/permissions#role-object
   //https://discord.com/developers/docs/resources/guild#get-guild-roles
   try {
@@ -50,20 +50,20 @@ export async function getServerRoles() {
   } catch (error) {
     console.error(error);
   }
-}
+};
 
-export async function getRoleDetails(
+export const getRoleDetails = async (
   roleIds: string[]
-): Promise<APIRole[] | undefined> {
+): Promise<APIRole[] | undefined> => {
   //https://discord.com/developers/docs/topics/permissions#role-object
   //https://discord.com/developers/docs/resources/guild#get-guild-role
   const serverRoles = await getServerRoles();
   if (!serverRoles) return undefined;
   const roles = serverRoles.filter((role) => roleIds.includes(role.id));
   return roles;
-}
+};
 
-export async function getGuilds() {
+export const getGuilds = async () => {
   //https://discord.com/developers/docs/resources/user#get-current-user-guilds
   try {
     return await fetch(`${discordApiBaseUrl}/users/@me/guilds`, {
@@ -78,7 +78,7 @@ export async function getGuilds() {
   } catch (error) {
     console.error(error);
   }
-}
+};
 
 export const getAllMembers = async () => {
   const params: RESTGetAPIGuildMembersQuery = {
