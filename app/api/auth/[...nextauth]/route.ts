@@ -3,15 +3,26 @@ import NextAuth, {
   getServerSession,
   type NextAuthOptions,
   type DefaultSession,
+  type User,
 } from "next-auth";
 import DiscordProvider from "next-auth/providers/discord";
 import { PrismaAdapter } from "@next-auth/prisma-adapter";
 import { env } from "@/env.mjs";
 import { prisma } from "prisma/db";
 import { signOut } from "next-auth/react";
-import { getAccount, getMember } from "@/lib/discord";
+import { getMember } from "@/lib/discord";
+import { type Account } from "@prisma/client";
 
 const memberRoleIds = ["1071217231536599133", "1071217231536599132"]; //TODO: Move member role ids to db
+
+export async function getAccount(user: User): Promise<Account | null> {
+  const account = await prisma.account.findFirst({
+    where: {
+      userId: user.id,
+    },
+  });
+  return account;
+}
 
 /**
  * Module augmentation for `next-auth` types. Allows us to add custom properties to the `session`

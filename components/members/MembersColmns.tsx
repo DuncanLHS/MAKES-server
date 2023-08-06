@@ -1,30 +1,54 @@
 "use client";
 
-import { type User, type Key } from "@prisma/client";
-import { type AccessorFnColumnDef } from "@tanstack/react-table";
-import { type APIGuildMember } from "discord-api-types/v10";
+import { type Key } from "@prisma/client";
+import { type ColumnDef } from "@tanstack/react-table";
+import { type APIRole, type APIGuildMember } from "discord-api-types/v10";
+import DiscordRole from "../DiscordRole";
+import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
+import EditKeyDialog from "../EditKeyDialog";
 
 // This type is used to define the shape of our data.
 // You can use a Zod schema here if you want.
-export interface UserKeys extends User {
-  keys?: Key[];
-}
+const queryClient = new QueryClient();
 
 export interface MemberUserKeys extends APIGuildMember {
-  localuser?: UserKeys;
+  key?: Key;
+  roleDetails?: APIRole[];
 }
 
-export const columns: AccessorFnColumnDef<MemberUserKeys>[] = [
+export const columns: ColumnDef<MemberUserKeys>[] = [
   {
-    accessorFn: (row) => row.nick ?? row.user?.username ?? "Unknown",
+    cell: ({ row }) =>
+      row.original.nick ?? row.original.user?.username ?? "Unknown",
     header: "Name",
   },
   {
-    accessorFn: (row) => row.localuser?.keys?.map((key) => key.rfid).join(", "),
-    header: "RFID Keys",
+    cell: ({ row }) => {
+      return (
+        <QueryClientProvider client={queryClient}>
+          <div className="flex flex-row justify-between">
+            {row.original.key ? (
+              <p className="mx-2">{row.original.key.rfid}</p>
+            ) : (
+              <p className="mx-2 italic text-muted-foreground">No key</p>
+            )}
+            <EditKeyDialog member={row.original} />
+          </div>
+        </QueryClientProvider>
+      );
+    },
+    header: "RFID Key",
   },
   {
-    accessorFn: (row) => row.roles.map((role) => role).join(", "),
     header: "Roles",
+    cell: ({ row }) => {
+      return (
+        <div className={"flex flex-wrap gap-2"}>
+          {row.original.roleDetails?.map((role) => (
+            <DiscordRole role={role} key={role.id} className="block" />
+          ))}
+        </div>
+      );
+    },
   },
 ];
