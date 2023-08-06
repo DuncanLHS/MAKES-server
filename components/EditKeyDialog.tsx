@@ -19,7 +19,7 @@ interface EditKeyDialogProps {
 const EditKeyDialog = ({ member }: EditKeyDialogProps) => {
   const [open, setOpen] = useState(false);
   return (
-    <Dialog open={open}>
+    <Dialog open={open} onOpenChange={setOpen}>
       <DialogTrigger asChild>
         <Button variant="outline" size="sm" onClick={() => setOpen(true)}>
           <Pencil className="h-4 w-4" />
