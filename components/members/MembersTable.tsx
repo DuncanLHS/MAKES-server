@@ -8,7 +8,6 @@ interface MembersTableProps {
 }
 
 const MembersTable = ({ data }: MembersTableProps) => {
-  console.log("members table");
   return <DataTable columns={columns} data={data} />;
 };
 
