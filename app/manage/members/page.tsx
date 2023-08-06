@@ -7,25 +7,21 @@ import { type MemberUserKeys } from "@/components/members/MembersColmns";
 const data = async () => {
   const serverRoles = await getServerRoles();
   const members = await getAllMembers();
-  const users = await prisma.user.findMany({
-    include: {
-      keys: true,
-    },
-  });
+  const keys = await prisma.key.findMany();
 
-  if (!members || !users || !serverRoles) {
+  if (!members || !serverRoles) {
     return [];
   }
 
   return members.map((member) => {
-    const user = users.find((user) => user.id === member.user?.id);
-
     return {
       ...member,
-      localuser: user,
       roleDetails: serverRoles?.filter((role) =>
         member.roles.includes(role.id)
       ),
+      key: member.user
+        ? keys.find((key) => key.discordUserId === member.user?.id)
+        : undefined,
     };
   }) as MemberUserKeys[];
 };
