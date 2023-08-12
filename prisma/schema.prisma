@@ -72,3 +72,20 @@ model Key {
   rfid          String @unique
   discordUserId String @unique
 }
+
+model Machine {
+  id            String           @id @default(uuid())
+  name          String
+  accessRoles   String[]
+  inductorRoles String[]
+  sessions      MachineSession[]
+}
+
+model MachineSession {
+  id              String    @id @default(uuid())
+  machineId       String
+  discordUserJSON String
+  startTime       DateTime
+  endTime         DateTime?
+  machine         Machine   @relation(fields: [machineId], references: [id], onDelete: Cascade)
+}
