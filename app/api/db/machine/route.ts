@@ -71,3 +71,27 @@ export async function POST(req: NextRequest) {
     return NextResponse.error();
   }
 }
+
+export async function DELETE(req: NextRequest) {
+  const data = (await req.json()) as Partial<Machine>;
+  try {
+    if (!data.id) {
+      return NextResponse.json(
+        { error: "Error. ID required" },
+        { status: 500 }
+      );
+    }
+
+    const res = await prisma.machine.delete({
+      where: {
+        id: data.id,
+      },
+    });
+
+    revalidateTag("machine");
+
+    return NextResponse.json(res);
+  } catch (error) {
+    return NextResponse.error();
+  }
+}
