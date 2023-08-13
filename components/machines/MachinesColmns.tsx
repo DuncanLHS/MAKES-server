@@ -4,6 +4,8 @@ import { type Machine } from "@prisma/client";
 import { type ColumnDef } from "@tanstack/react-table";
 import DiscordRole from "../DiscordRole";
 import { type APIRole } from "discord-api-types/v10";
+import EditMachineDialog from "../EditMachineDialog";
+import DeleteMachine from "../DeleteMachine";
 
 export type MachineWithRoles = Omit<
   Machine,
@@ -11,6 +13,20 @@ export type MachineWithRoles = Omit<
 > & {
   accessRoles: (APIRole | undefined)[];
   inductorRoles: (APIRole | undefined)[];
+};
+
+const stripRoles = (machine: MachineWithRoles): Machine => {
+  return {
+    ...machine,
+    accessRoles: machine.accessRoles.reduce((acc: string[], role) => {
+      if (role) acc.push(role.id);
+      return acc;
+    }, []),
+    inductorRoles: machine.inductorRoles.reduce((acc: string[], role) => {
+      if (role) acc.push(role.id);
+      return acc;
+    }, []),
+  };
 };
 
 export const columns: ColumnDef<MachineWithRoles>[] = [
@@ -39,6 +55,17 @@ export const columns: ColumnDef<MachineWithRoles>[] = [
             <DiscordRole role={role} key={role?.id ?? i} className="block" />
           ))}
         </div>
+      );
+    },
+  },
+  {
+    header: "Actions",
+    cell: ({ row }) => {
+      return (
+        <span className="flex gap-2">
+          <EditMachineDialog machine={stripRoles(row.original)} />
+          <DeleteMachine row={row} />
+        </span>
       );
     },
   },
