@@ -12,7 +12,7 @@ interface MachinesTableProps {
 const MachinesTable = ({ data }: MachinesTableProps) => {
   return (
     <QueryClientProvider client={queryClient}>
-      <DataTable columns={columns} data={data} />;
+      <DataTable columns={columns} data={data} />
     </QueryClientProvider>
   );
 };
