@@ -51,24 +51,25 @@ const RoleArrayField = ({
           </TableRow>
         </TableHeader>
         <TableBody>
-          {!value || !guildRoles.data ? (
+          {guildRoles.isFetching ? (
             <TableRow>
               <TableCell className="flex items-center justify-between p-2">
                 <Skeleton className="h-6 w-1/2 rounded-full" />
                 <Skeleton className="h-9 w-12" />
               </TableCell>
             </TableRow>
-          ) : (
+          ) : !guildRoles.data ? (
+            <p className="text-destructive">Server Error</p>
+          ) : value.length > 0 ? (
             value.map((role) => (
               <TableRow key={role}>
                 <TableCell className="p-2">
                   <div className="flex w-full flex-row items-center justify-between">
                     <DiscordRole
                       role={
-                        // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
                         guildRoles.data.filter((guildRole) => {
                           return guildRole.id === role;
-                        })[0]!
+                        })[0]
                       }
                     />
                     <Button
@@ -82,22 +83,36 @@ const RoleArrayField = ({
                 </TableCell>
               </TableRow>
             ))
+          ) : (
+            <TableRow>
+              <TableCell className="p-2">
+                <p className="italic text-muted-foreground">
+                  No roles selected
+                </p>
+              </TableCell>
+            </TableRow>
           )}
           <TableRow>
             <TableCell>
               <FormLabel>Add a Role:</FormLabel>
 
-              {!value || !guildRoles.data ? (
+              {guildRoles.isFetching ? (
                 <div className="flex justify-between">
                   <Skeleton className="h-10 w-3/4" />
                   <Skeleton className="h-10 w-1/5" />
                 </div>
+              ) : !guildRoles.data ? (
+                <p className="text-destructive">Server Error</p>
               ) : (
                 <RoleSelect
                   onChange={onSelect}
-                  options={guildRoles.data.filter((role) => {
-                    return !value.includes(role.id);
-                  })}
+                  options={
+                    value.length > 0
+                      ? guildRoles.data.filter((role) => {
+                          return !value.includes(role.id);
+                        })
+                      : guildRoles.data
+                  }
                   value={selectValue}
                 />
               )}
