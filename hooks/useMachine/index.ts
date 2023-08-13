@@ -20,6 +20,7 @@ export const updateMachine = async (data: Partial<Machine>) => {
 
 export const useMachineMutation = () => {
   const queryClient = useQueryClient();
+
   return useMutation((data: Partial<Machine>) => updateMachine(data), {
     onSuccess: () => {
       void queryClient.invalidateQueries({ queryKey: ["/api/db/machine"] });
@@ -28,4 +29,26 @@ export const useMachineMutation = () => {
       void queryClient.invalidateQueries({ queryKey: ["/api/db/machine"] });
     },
   });
+};
+
+export const useDeleteMachine = () => {
+  const queryClient = useQueryClient();
+
+  return useMutation(
+    async (data: Partial<Machine>) => {
+      const response = await fetch("/api/db/machines", {
+        method: "DELETE",
+        body: JSON.stringify(data),
+      });
+      if (!response.ok) {
+        throw new Error(response.statusText);
+      }
+      return response;
+    },
+    {
+      onSuccess: () => {
+        void queryClient.invalidateQueries({ queryKey: ["/api/db/machine"] });
+      },
+    }
+  );
 };
