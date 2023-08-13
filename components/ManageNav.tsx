@@ -26,6 +26,11 @@ export default function ManageNav() {
               Members
             </NavigationMenuLink>
           </Link>
+          <Link href="/manage/machines" legacyBehavior passHref>
+            <NavigationMenuLink className={navigationMenuTriggerStyle()}>
+              Machines
+            </NavigationMenuLink>
+          </Link>
         </NavigationMenuItem>
       </NavigationMenuList>
     </NavigationMenu>
