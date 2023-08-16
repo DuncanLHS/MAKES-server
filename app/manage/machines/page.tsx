@@ -35,14 +35,15 @@ const data = async () => {
 const page = async () => {
   const tableData = await data();
   return (
-    <main className="mx-auto flex h-screen max-w-6xl flex-grow flex-col p-4">
-      <div className="flex flex-row justify-between">
-        <h1 className="mb-4 scroll-m-20 text-4xl font-extrabold tracking-tight lg:text-5xl">
-          Machines
-        </h1>
+    <main className="mx-auto flex h-screen max-w-6xl flex-grow flex-col gap-2 p-4">
+      <h1 className="mb-4 scroll-m-20 text-4xl font-extrabold tracking-tight lg:text-5xl">
+        Machines
+      </h1>
+      <div>
         <EditMachineDialog buttonText="New Machine" />
       </div>
-      <section className="flex flex-wrap gap-4">
+
+      <section className="">
         <MachinesTable data={tableData} />
       </section>
     </main>
