@@ -28,10 +28,9 @@ export const RoleSelect = ({ onChange, options, value }: RoleSelectProps) => {
           {value ? (
             <DiscordRole
               role={
-                // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
                 options.filter((guildRole) => {
                   return guildRole.id === value;
-                })[0]!
+                })[0]
               }
             />
           ) : (
