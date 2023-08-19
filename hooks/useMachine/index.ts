@@ -18,14 +18,14 @@ export const updateMachine = async (data: Partial<Machine>) => {
   }
 };
 
-export const useMachineMutation = () => {
+export const useUpdateMachine = () => {
   const queryClient = useQueryClient();
 
   return useMutation((data: Partial<Machine>) => updateMachine(data), {
     onSuccess: () => {
       void queryClient.invalidateQueries({ queryKey: ["/api/db/machine"] });
     },
-    onError: (error) => {
+    onError: (_error) => {
       void queryClient.invalidateQueries({ queryKey: ["/api/db/machine"] });
     },
   });

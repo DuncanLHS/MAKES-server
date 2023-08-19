@@ -5,7 +5,7 @@ import { z } from "zod";
 import { Button } from "../ui/Button";
 import { type Machine } from "@prisma/client";
 import RoleArrayField from "./fields/RoleArrayField";
-import { useMachineMutation } from "@/hooks";
+import { useUpdateMachine } from "@/hooks";
 import { useEffect } from "react";
 import { toast } from "../ui/UseToast";
 import { Input } from "../ui/Input";
@@ -35,7 +35,8 @@ export default function MachineSettingsForm({
   machine,
   setOpen,
 }: MachineSettingsFormProps) {
-  const machineMutate = useMachineMutation();
+  const machineMutate = useUpdateMachine();
+
   const form = useForm<z.infer<typeof FormSchema>>({
     defaultValues: {
       // eslint-disable-next-line @typescript-eslint/no-unsafe-call
