@@ -39,7 +39,6 @@ export default function MachineSettingsForm({
 
   const form = useForm<z.infer<typeof FormSchema>>({
     defaultValues: {
-      // eslint-disable-next-line @typescript-eslint/no-unsafe-call
       id: machine?.id ?? (uuidv4() as string),
       name: machine?.name ?? "",
       accessRoles: machine?.accessRoles ?? [],
