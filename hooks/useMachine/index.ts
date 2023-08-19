@@ -36,7 +36,7 @@ export const useDeleteMachine = () => {
 
   return useMutation(
     async (data: Partial<Machine>) => {
-      const response = await fetch("/api/db/machines", {
+      const response = await fetch("/api/db/machine", {
         method: "DELETE",
         body: JSON.stringify(data),
       });
