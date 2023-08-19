@@ -39,7 +39,7 @@ export default function MachineSettingsForm({
 
   const form = useForm<z.infer<typeof FormSchema>>({
     defaultValues: {
-      id: machine?.id ?? (uuidv4() as string),
+      id: machine?.id ?? uuidv4(),
       name: machine?.name ?? "",
       accessRoles: machine?.accessRoles ?? [],
       inductorRoles: machine?.inductorRoles ?? [],
