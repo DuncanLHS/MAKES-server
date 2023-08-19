@@ -9,6 +9,9 @@ import { useMachineMutation } from "@/hooks";
 import { useEffect } from "react";
 import { toast } from "../ui/UseToast";
 import { Input } from "../ui/Input";
+import { Label } from "../ui/Label";
+import ReadOnlyCopy from "../ui/ReadOnlyCopy";
+import { v4 as uuidv4 } from "uuid";
 
 const FormSchema = z.object({
   id: z.string().optional(),
@@ -34,7 +37,13 @@ export default function MachineSettingsForm({
 }: MachineSettingsFormProps) {
   const machineMutate = useMachineMutation();
   const form = useForm<z.infer<typeof FormSchema>>({
-    defaultValues: machine,
+    defaultValues: {
+      // eslint-disable-next-line @typescript-eslint/no-unsafe-call
+      id: machine?.id ?? (uuidv4() as string),
+      name: machine?.name ?? "",
+      accessRoles: machine?.accessRoles ?? [],
+      inductorRoles: machine?.inductorRoles ?? [],
+    },
     resolver: zodResolver(FormSchema),
   });
 
@@ -80,11 +89,24 @@ export default function MachineSettingsForm({
         <div className="flex flex-wrap gap-8">
           <FormField
             control={form.control}
+            name="id"
+            render={({ field: { value } }) => (
+              <ReadOnlyCopy label="ID" text={value ?? "New Machine"} />
+            )}
+          />
+          <FormField
+            control={form.control}
             name="name"
             render={({ field: { value, onChange } }) => (
-              <>
-                <Input placeholder="Name" value={value} onChange={onChange} />
-              </>
+              <div className="grid w-full max-w-sm items-center gap-1.5">
+                <Label htmlFor="name">Name</Label>
+                <Input
+                  id="name"
+                  placeholder="Name"
+                  value={value}
+                  onChange={onChange}
+                />
+              </div>
             )}
           />
           <FormField
