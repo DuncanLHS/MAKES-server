@@ -13,7 +13,6 @@ const DiscordRole = ({ role, className }: DiscordRoleProps) => {
       <Badge
         variant={"default"}
         className={cn("max-h-6 border-red-700 text-sm text-red-700", className)}
-        style={{ backgroundColor: "#ffffff" }}
       >
         Unknown Role
       </Badge>
@@ -24,9 +23,12 @@ const DiscordRole = ({ role, className }: DiscordRoleProps) => {
   return (
     <Badge
       variant={"default"}
-      className={cn("max-h-6 text-sm", className)}
-      style={{ backgroundColor: `${bgColor ?? "#ffffff"}` }}
+      className={cn("max-h-6 gap-2 text-sm", className)}
     >
+      <span
+        className="h-3 w-3 rounded-full"
+        style={bgColor ? { backgroundColor: `${bgColor}` } : {}}
+      />
       {role.name}
     </Badge>
   );
