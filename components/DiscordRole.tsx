@@ -26,7 +26,7 @@ const DiscordRole = ({ role, className }: DiscordRoleProps) => {
       className={cn("max-h-6 gap-2 text-sm", className)}
     >
       <span
-        className="inline-block h-3 w-3 rounded-full"
+        className="inline-block h-3 w-3 whitespace-nowrap rounded-full"
         style={bgColor ? { backgroundColor: `${bgColor}` } : {}}
       />
       {role.name}

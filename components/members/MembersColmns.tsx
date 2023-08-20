@@ -45,7 +45,7 @@ export const columns: ColumnDef<MemberUserKeys>[] = [
       return (
         <div className={"flex flex-wrap gap-2"}>
           {row.original.roleDetails?.map((role) => (
-            <DiscordRole role={role} key={role.id} className="block" />
+            <DiscordRole role={role} key={role.id} />
           ))}
         </div>
       );

@@ -16,11 +16,7 @@ const UserRoles = async ({ roleIds }: UserRolesProps) => {
   return (
     <div className={"flex flex-wrap gap-2"}>
       {roles.map((role) => (
-        <DiscordRole
-          role={role}
-          key={role.id}
-          className="block whitespace-nowrap"
-        />
+        <DiscordRole role={role} key={role.id} />
       ))}
     </div>
   );

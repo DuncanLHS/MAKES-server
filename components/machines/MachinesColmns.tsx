@@ -40,7 +40,7 @@ export const columns: ColumnDef<MachineWithRoles>[] = [
       return (
         <div className={"flex flex-wrap gap-2"}>
           {row.original.accessRoles.map((role, i) => (
-            <DiscordRole role={role} key={role?.id ?? i} className="block" />
+            <DiscordRole role={role} key={role?.id ?? i} />
           ))}
         </div>
       );
@@ -52,7 +52,7 @@ export const columns: ColumnDef<MachineWithRoles>[] = [
       return (
         <div className={"flex flex-wrap gap-2"}>
           {row.original.inductorRoles.map((role, i) => (
-            <DiscordRole role={role} key={role?.id ?? i} className="block" />
+            <DiscordRole role={role} key={role?.id ?? i} />
           ))}
         </div>
       );
