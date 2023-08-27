@@ -5,8 +5,8 @@ import { getAllMembers, getServerRoles } from "@/lib/discord";
 import { type MemberUserKeys } from "@/components/members/MembersColmns";
 
 const data = async () => {
-  const serverRoles = await getServerRoles();
-  const members = await getAllMembers();
+  const serverRoles = await getServerRoles("1071217231515615282");
+  const members = await getAllMembers("1071217231515615282");
   const keys = await prisma.key.findMany();
 
   if (!members || !serverRoles) {

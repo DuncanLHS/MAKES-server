@@ -1,65 +1,42 @@
-import type {
-  APIGuild,
-  APIGuildMember,
-  APIRole,
-  RESTGetAPIGuildMembersQuery,
-} from "discord-api-types/v10";
-
-const guildId = "1071217231515615282"; //TODO: Move guild id to db
-const discordApiBaseUrl = "https://discord.com/api";
+import type { APIGuildMember, APIGuild, APIRole } from "discord-api-types/v10";
+import discordAPICall from "./discordAPI";
 
 export const getMember = async (
-  providerAccountId: string
+  userId: string,
+  guildId: string
 ): Promise<APIGuildMember | undefined> => {
-  //https://discord.com/developers/docs/resources/guild#get-guild-member
-  if (providerAccountId) {
-    try {
-      return await fetch(
-        `${discordApiBaseUrl}/guilds/${guildId}/members/${providerAccountId}`,
-        {
-          next: { revalidate: 30 },
-          headers: {
-            Authorization: `Bot ${process.env.DISCORD_BOT_TOKEN as string}`,
-          },
-        }
-      )
-        .then((res) => res.json())
-        .then((data: APIGuildMember) => {
-          return data;
-        });
-    } catch (error) {
-      console.error(error);
-    }
-  } else {
-    return undefined;
+  try {
+    return await discordAPICall<APIGuildMember>(
+      `/guilds/${guildId}/members/${userId}`,
+      "GET",
+      `member - ${userId}`
+    );
+  } catch (error) {
+    console.error(error);
   }
 };
 
-export const getServerRoles = async () => {
+export const getServerRoles = async (guildId: string) => {
   //https://discord.com/developers/docs/topics/permissions#role-object
   //https://discord.com/developers/docs/resources/guild#get-guild-roles
   try {
-    return await fetch(`${discordApiBaseUrl}/guilds/${guildId}/roles`, {
-      next: { revalidate: 30 },
-      headers: {
-        Authorization: `Bot ${process.env.DISCORD_BOT_TOKEN as string}`,
-      },
-    })
-      .then((res) => res.json())
-      .then((data: APIRole[]) => {
-        return data;
-      });
+    return await discordAPICall<APIRole[]>(
+      `/guilds/${guildId}/roles`,
+      "GET",
+      `guildRoles - ${guildId}`
+    );
   } catch (error) {
     console.error(error);
   }
 };
 
 export const getRoleDetails = async (
-  roleIds: string[]
+  roleIds: string[],
+  guildId: string
 ): Promise<APIRole[] | undefined> => {
   //https://discord.com/developers/docs/topics/permissions#role-object
   //https://discord.com/developers/docs/resources/guild#get-guild-role
-  const serverRoles = await getServerRoles();
+  const serverRoles = await getServerRoles(guildId);
   if (!serverRoles) return undefined;
   const roles = serverRoles.filter((role) => roleIds.includes(role.id));
   return roles;
@@ -68,41 +45,25 @@ export const getRoleDetails = async (
 export const getGuilds = async () => {
   //https://discord.com/developers/docs/resources/user#get-current-user-guilds
   try {
-    return await fetch(`${discordApiBaseUrl}/users/@me/guilds`, {
-      headers: {
-        Authorization: `Bot ${process.env.DISCORD_BOT_TOKEN as string}`,
-      },
-    })
-      .then((res) => res.json())
-      .then((data: APIGuild[]) => {
-        return data;
-      });
+    return await discordAPICall<APIGuild[]>(
+      `/users/@me/guilds`,
+      "GET",
+      `guilds`
+    );
   } catch (error) {
     console.error(error);
   }
 };
 
-export const getAllMembers = async () => {
-  const params: RESTGetAPIGuildMembersQuery = {
-    limit: 1000,
-  };
-  const url = new URL(`${discordApiBaseUrl}/guilds/${guildId}/members`);
-
-  Object.keys(params).forEach((key) =>
-    url.searchParams.append(
-      key,
-      params[key as keyof RESTGetAPIGuildMembersQuery] as string
-    )
-  );
-
+export const getAllMembers = async (guildId: string) => {
   try {
-    const res = await fetch(url, {
-      next: { revalidate: 30 },
-      headers: {
-        Authorization: `Bot ${process.env.DISCORD_BOT_TOKEN as string}`,
-      },
-    });
-    const data = (await res.json()) as APIGuildMember[];
+    const data = await discordAPICall<APIGuildMember[]>(
+      `/guilds/${guildId}/members?limit=1000`,
+      "GET",
+      `members - ${guildId}`
+    );
+
+    if (!data) return undefined;
 
     const filtered = data.filter((member) => member.user?.bot !== true);
 
@@ -129,3 +90,4 @@ export const getAllMembers = async () => {
     console.error(error);
   }
 };
+export { discordAPICall };

@@ -57,7 +57,7 @@ export const authOptions: NextAuthOptions = {
     signIn: async ({ account }) => {
       console.log("session callback");
       const member = account
-        ? await getMember(account.providerAccountId)
+        ? await getMember(account.providerAccountId, "1071217231515615282")
         : null;
       if (!member) {
         return false; //TODO: Redirect to error page (not a member)
@@ -74,7 +74,7 @@ export const authOptions: NextAuthOptions = {
       console.log("session callback");
       const account = await getAccount(user);
       const member = account
-        ? await getMember(account.providerAccountId)
+        ? await getMember(account.providerAccountId, "1071217231515615282")
         : null;
       if (!member) {
         await signOut({ callbackUrl: "/" });

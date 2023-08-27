@@ -6,7 +6,7 @@ import { getServerRoles } from "@/lib/discord";
 import EditMachineDialog from "@/components/EditMachineDialog";
 
 const data = async () => {
-  const roles = await getServerRoles();
+  const roles = await getServerRoles("1071217231515615282");
   const machines = await prisma.machine.findMany();
   if (!roles || !machines) {
     return [];
