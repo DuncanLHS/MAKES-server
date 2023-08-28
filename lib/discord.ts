@@ -1,5 +1,33 @@
 import type { APIGuildMember, APIGuild, APIRole } from "discord-api-types/v10";
 import discordAPICall from "./discordAPI";
+import { prisma } from "@/prisma/db";
+
+export const userAuth = async (
+  userId: string
+): Promise<Map<string, ("admin" | "user")[]> | undefined> => {
+  const servers = await prisma.server.findMany();
+  const userAuths = new Map<string, ("admin" | "user")[]>();
+  servers.map(async (server) => {
+    const member = await getMember(userId, server.guildId);
+
+    if (!member) return;
+    const userAuth = new Array<"admin" | "user">();
+
+    if (server.adminRoleIds.some((roleId) => member.roles.includes(roleId))) {
+      userAuth.push("admin");
+      console.log("User is admin");
+    }
+
+    if (server.userRoleIds.some((roleId) => member.roles.includes(roleId))) {
+      userAuth.push("user");
+      console.log("User is user");
+    }
+    if (userAuth.length > 0) userAuths.set(server.guildId, userAuth);
+  });
+
+  if (userAuths.size === 0) return undefined;
+  return userAuths;
+};
 
 export const getMember = async (
   userId: string,

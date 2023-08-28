@@ -10,7 +10,7 @@ import { PrismaAdapter } from "@next-auth/prisma-adapter";
 import { env } from "@/env.mjs";
 import { prisma } from "prisma/db";
 import { signOut } from "next-auth/react";
-import { getMember } from "@/lib/discord";
+import { getMember, userAuth } from "@/lib/discord";
 import { type Account } from "@prisma/client";
 
 const memberRoleIds = ["1071217231536599133", "1071217231536599132"]; //TODO: Move member role ids to db
@@ -63,7 +63,6 @@ export const authOptions: NextAuthOptions = {
         return false; //TODO: Redirect to error page (not a member)
       }
       const roles = member.roles;
-
       if (roles && memberRoleIds.some((role) => roles.includes(role))) {
         return true;
       }
@@ -72,7 +71,10 @@ export const authOptions: NextAuthOptions = {
     },
     session: async ({ session, user }) => {
       console.log("session callback");
+
       const account = await getAccount(user);
+      if (account)
+        console.log("AUTHUSER", await userAuth(account.providerAccountId));
       const member = account
         ? await getMember(account.providerAccountId, "1071217231515615282")
         : null;
